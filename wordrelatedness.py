@@ -37,6 +37,11 @@ class WordRelate:
         # -----------------------------------
 
         # Your code goes here (~ 1 - 5 lines)
+        self.voc = {}
+        self.ivoc = {}
+        self.collections = {}
+        self.vrm = {}
+        self.reduced_vrm = {}
 
         print(f"Files found in storage: \n {os.listdir(self.data_path)}")
 

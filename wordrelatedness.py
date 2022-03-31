@@ -78,7 +78,7 @@ class WordRelate:
         # -----------------------------------
 
         # Esto ya debe recibir la línea en lower
-        return re.sub(f"[{string.punctuation}]+", "", line).split()
+        return re.sub(rf"([0-9]|[{string.punctuation}])", "", line).split()
 
 
     def get_voc(self, collection_id, sw, top_freq_words=2000):
@@ -112,9 +112,7 @@ class WordRelate:
         # Nos quedamos solo con las primeras 2000 palabras
 
         self.read_collection(collection_id, sw)
-        aux = pd.value_counts(self.content[collection_id]).sort_values().iloc[0:min(top_freq_words, len(self.words[collection_id]))].sort_index()
-        print(len(self.content[collection_id]))
-        words = np.unique(self.content[collection_id])
+        aux = pd.value_counts(self.content[collection_id]).iloc[0:min(top_freq_words, len(self.words[collection_id]))].sort_index()
         self.voc[collection_id] = pd.Series({aux.index[i]: i for i in range(len(aux))})
         self.ivoc[collection_id] = pd.Series(self.voc[collection_id].index, index=self.voc[collection_id].values).sort_index()
         print(f'Monotonic index:{self.voc[collection_id].index.is_monotonic}')
@@ -313,12 +311,13 @@ if __name__ == '__main__':
     # Your code goes here (~ 7 lines)
 
     # Read collection 130
-    wc.read_collection(73, stopwords)
-    wc.get_voc(collection_id = 73, sw = stopwords)
-    wc.dist_rep(collection_id = 73)
-    wc.ppmi_reweight(collection_id = 73)
-    wc.dim_redux(collection_id = 73)
+    collection = 73
+    
+    wc.read_collection(collection, stopwords)
+    wc.get_voc(collection_id = collection, sw = stopwords)
+    wc.dist_rep(collection_id = collection)
+    wc.ppmi_reweight(collection_id = collection)
+    wc.dim_redux(collection_id = collection)
     wc.plot_reps()
-
 
    

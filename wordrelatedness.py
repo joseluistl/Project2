@@ -131,11 +131,11 @@ class WordRelate:
             indexes = []
             
             for line in text:
-                line = np.array([w for w in text if w in self.voc[collection_id]], 
+                line = np.array([w for w in line if w in self.voc[collection_id]], 
                                 dtype=object)
                 
-                for index in range(1, len(line)):
-                    aux = line[max(0, index-ws): (min(len(line), index+ws)+1)]
+                for index in range(0, len(line)+1):
+                    aux = np.concatenate((line[max(0, index-ws):index], line[index+1, (min(len(line), index+ws)+1)]), axis=0)
                     indexes.append(self.voc[line[index]], np.array([self.voc[x] for x in aux]))
                     
             indexes = np.array(indexes)
@@ -157,16 +157,10 @@ class WordRelate:
         # -----------------------------------
 
         # Your code goes here (~ 1 - 4 lines)
-        size = len(self.voc[collection_id])
-        expected = np.zeros((size, size))
-        matriz = self.vrm[collection_id]
-        total = sum(sum(matriz))
-
-        for i in range(size):
-            for j in range(size):
-                suma_i = sum(matriz[i])
-                suma_j = sum(matriz[:, j])
-                expected[i, j] = (suma_i * suma_j)/total
+        total = sum(sum(self.voc[collection_id]))
+        sum_rows = np.array([sum(x) for x in self.vrm[collection_id]])
+        sum_cols = sum(self.vrm[collection_id])
+        expected = np.array([x*sum_cols for x in sum_rows])/total
 
         with np.errstate(divide='ignore'):
             log_vals = np.log(self.vrm[collection_id]/expected)
@@ -314,3 +308,9 @@ if __name__ == '__main__':
     # -----------------------------------
 
     # Your code goes here (~ 7 lines)
+    wc.read_collection(1, stopwords)
+    wc.get_voc(collection_id=1, sw=stopwords)
+    wc.dist_rep(collection_id=1)
+    wc.ppmi_reweight(collection_id=1)
+    wc.dim_redux(collection_id=1)
+    wc.plot_reps()
